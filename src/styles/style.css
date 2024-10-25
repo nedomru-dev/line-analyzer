@@ -1,7 +1,4 @@
-.customer-card {
-    transition: transform 0.1s ease-in-out;
-}
-
 .customer-card:active {
-    transform: scale(0.98);
+    transform: translateY(1px) !important;
+    transition-duration: 0.1s;
 }

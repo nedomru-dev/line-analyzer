@@ -196,40 +196,48 @@ import type {Customer} from '../types/Customer';
 
         // Function to create customer card HTML
         const createCustomerCard = (customer: Customer, categoryStyle: string) => `
-        <div class="${categoryStyle} border rounded-lg p-4 hover:shadow-sm transition-shadow relative group cursor-pointer customer-card"
-             data-customer='${JSON.stringify(customer).replace(/'/g, "&apos;")}'>
-            <div class="flex justify-between items-start mb-2">
-                <p class="font-medium text-gray-800">${customer.Клиент}</p>
-                <span class="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <i class="fas fa-copy"></i>
-                </span>
-            </div>
-            <div class="text-sm space-y-1">
-                <p class="text-gray-600">
-                    <i class="fas fa-file-contract w-5"></i> ${customer.Договор}
-                </p>
-                ${customer.Тел ? `
-                    <p class="text-gray-600">
-                        <i class="fas fa-phone w-5"></i> ${customer.Тел}
-                    </p>
-                ` : ''}
-                <p class="text-gray-600">
-                    <i class="fas fa-map-marker-alt w-5"></i> ${customer.Адрес}
-                </p>
-                <p class="text-gray-600">
-                    <i class="fas fa-network-wired w-5"></i> ${customer.МКУ}
-                </p>
-                <p class="text-gray-600">
-                    <i class="fas fa-map w-5"></i> ${customer['Территория (участок)']}
-                </p>
-                ${customer.problem ? `
-                    <p class="text-red-600 mt-2">
-                        <i class="fas fa-exclamation-circle w-5"></i> ${customer.problem}
-                    </p>
-                ` : ''}
-            </div>
+    <div class="${categoryStyle} border rounded-lg p-4 relative group cursor-pointer customer-card
+                transform transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md"
+         data-customer='${JSON.stringify(customer).replace(/'/g, "&apos;")}'>
+        <div class="flex justify-between items-start mb-2">
+            <p class="font-medium text-gray-800">${customer.Клиент}</p>
+            <span class="text-gray-500 opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out
+                       transform group-hover:scale-105">
+                <i class="fas fa-copy"></i>
+            </span>
         </div>
-    `;
+        <div class="text-sm space-y-1 transition-opacity duration-200 group-hover:opacity-90">
+            <p class="text-gray-600 flex items-center gap-2 group-hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-file-contract w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                ${customer.Договор}
+            </p>
+            ${customer.Тел ? `
+                <p class="text-gray-600 flex items-center gap-2 group-hover:text-gray-800 transition-colors duration-200">
+                    <i class="fas fa-phone w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                    ${customer.Тел}
+                </p>
+            ` : ''}
+            <p class="text-gray-600 flex items-center gap-2 group-hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-map-marker-alt w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                ${customer.Адрес}
+            </p>
+            <p class="text-gray-600 flex items-center gap-2 group-hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-network-wired w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                ${customer.МКУ}
+            </p>
+            <p class="text-gray-600 flex items-center gap-2 group-hover:text-gray-800 transition-colors duration-200">
+                <i class="fas fa-map w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                ${customer['Территория (участок)']}
+            </p>
+            ${customer.problem ? `
+                <p class="text-red-600 mt-2 flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle w-5 transition-transform duration-200 group-hover:scale-110"></i> 
+                    ${customer.problem}
+                </p>
+            ` : ''}
+        </div>
+    </div>
+`;
 
         // МКУ статистика
         const mkuCardHtml = `
