@@ -1,97 +1,101 @@
 ---
 import StatisticsCard from '../components/StatisticsCard.astro';
 import ProblemCategoryCard from '../components/ProblemCategoryCard.astro';
-import type { AnalysisResult } from '../types/Analysis';
-import type { Customer } from '../types/Customer';
+import type {AnalysisResult} from '../types/Analysis';
+import type {Customer} from '../types/Customer';
 ---
 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Анализатор обращений клиентов</title>
-	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализатор обращений клиентов</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/style.css">
 </head>
 <body class="bg-gray-50 min-h-screen p-4 md:p-8">
+<div id="copy-toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
+    Карточка скопирована!
+</div>
 <div class="max-w-7xl mx-auto">
-	<header class="bg-white rounded-lg shadow-sm p-6 mb-8">
-		<h1 class="text-3xl font-bold text-gray-800 mb-2">Анализатор обращений клиентов</h1>
-		<p class="text-gray-600">Вставьте данные клиентов для анализа проблем и распределения по участкам</p>
-	</header>
+    <header class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Анализатор обращений клиентов</h1>
+        <p class="text-gray-600">Вставьте данные клиентов для анализа проблем и распределения по участкам</p>
+    </header>
 
-	<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-		<div class="flex gap-4 mb-4">
-			<button
-				id="pasteExample"
-				class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-2"
-				title="Вставить пример данных">
-				<i class="fas fa-clipboard"></i>
-				Пример данных
-			</button>
-			<button
-				id="clearData"
-				class="text-red-600 hover:text-red-700 text-sm flex items-center gap-2"
-				title="Очистить поле ввода">
-				<i class="fas fa-trash-alt"></i>
-				Очистить
-			</button>
-		</div>
-		<textarea
-			id="inputData"
-			class="w-full h-48 p-4 border border-gray-300 rounded-lg mb-4 font-mono text-sm"
-			placeholder="Формат данных:&#10;Клиент: Иванов Иван Иванович&#10;Договор: 1234567&#10;Тел: +7 (999) 123-45-67&#10;Адрес: ул. Примерная, д. 1&#10;Логин: user123&#10;МКУ: МКУ-1&#10;Территория (участок): Центральный&#10;Проблема со скоростью интернета"></textarea>
-		<div class="flex gap-4">
-			<button
-				id="analyzeBtn"
-				class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
-				<i class="fas fa-chart-bar"></i>
-				Анализировать
-			</button>
-			<button
-				id="exportBtn"
-				class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2 hidden">
-				<i class="fas fa-file-export"></i>
-				Экспорт в Excel
-			</button>
-		</div>
-	</div>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div class="flex gap-4 mb-4">
+            <button
+                    id="pasteExample"
+                    class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-2"
+                    title="Вставить пример данных">
+                <i class="fas fa-clipboard"></i>
+                Пример данных
+            </button>
+            <button
+                    id="clearData"
+                    class="text-red-600 hover:text-red-700 text-sm flex items-center gap-2"
+                    title="Очистить поле ввода">
+                <i class="fas fa-trash-alt"></i>
+                Очистить
+            </button>
+        </div>
+        <textarea
+                id="inputData"
+                class="w-full h-48 p-4 border border-gray-300 rounded-lg mb-4 font-mono text-sm"
+                placeholder="Формат данных:&#10;Клиент: Иванов Иван Иванович&#10;Договор: 1234567&#10;Тел: +7 (999) 123-45-67&#10;Адрес: ул. Примерная, д. 1&#10;Логин: user123&#10;МКУ: МКУ-1&#10;Территория (участок): Центральный&#10;Проблема со скоростью интернета"></textarea>
+        <div class="flex gap-4">
+            <button
+                    id="analyzeBtn"
+                    class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
+                <i class="fas fa-chart-bar"></i>
+                Анализировать
+            </button>
+            <button
+                    id="exportBtn"
+                    class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2 hidden">
+                <i class="fas fa-file-export"></i>
+                Экспорт в Excel
+            </button>
+        </div>
+    </div>
 
-	<!-- Статистика -->
-	<div id="statsOverview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 hidden">
-		<div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
-			<h3 class="text-sm text-blue-700 mb-1">Всего клиентов</h3>
-			<p id="totalCustomers" class="text-2xl font-bold text-blue-800">0</p>
-		</div>
-		<div class="bg-green-50 rounded-lg p-4 border border-green-100">
-			<h3 class="text-sm text-green-700 mb-1">Уникальных МКУ</h3>
-			<p id="uniqueMkus" class="text-2xl font-bold text-green-800">0</p>
-		</div>
-		<div class="bg-purple-50 rounded-lg p-4 border border-purple-100">
-			<h3 class="text-sm text-purple-700 mb-1">Территорий</h3>
-			<p id="uniqueTerritories" class="text-2xl font-bold text-purple-800">0</p>
-		</div>
-		<div class="bg-red-50 rounded-lg p-4 border border-red-100">
-			<h3 class="text-sm text-red-700 mb-1">Проблем</h3>
-			<p id="totalProblems" class="text-2xl font-bold text-red-800">0</p>
-		</div>
-	</div>
+    <!-- Статистика -->
+    <div id="statsOverview" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 hidden">
+        <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+            <h3 class="text-sm text-blue-700 mb-1">Всего клиентов</h3>
+            <p id="totalCustomers" class="text-2xl font-bold text-blue-800">0</p>
+        </div>
+        <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+            <h3 class="text-sm text-green-700 mb-1">Уникальных МКУ</h3>
+            <p id="uniqueMkus" class="text-2xl font-bold text-green-800">0</p>
+        </div>
+        <div class="bg-purple-50 rounded-lg p-4 border border-purple-100">
+            <h3 class="text-sm text-purple-700 mb-1">Территорий</h3>
+            <p id="uniqueTerritories" class="text-2xl font-bold text-purple-800">0</p>
+        </div>
+        <div class="bg-red-50 rounded-lg p-4 border border-red-100">
+            <h3 class="text-sm text-red-700 mb-1">Проблем</h3>
+            <p id="totalProblems" class="text-2xl font-bold text-red-800">0</p>
+        </div>
+    </div>
 
-	<!-- Результаты анализа -->
-	<div id="results" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-		<!-- Results will be populated here -->
-	</div>
+    <!-- Результаты анализа -->
+    <div id="results" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Results will be populated here -->
+    </div>
 </div>
 
 <script>
-	import { parseCustomerData } from '../utils/dataParser';
-	import { analyzeData } from '../utils/dataAnalyzer';
-	import type { AnalysisResult } from '../types/Analysis';
-	import type { Customer } from '../types/Customer';
+    import {parseCustomerData} from '../utils/dataParser';
+    import {analyzeData} from '../utils/dataAnalyzer';
+    import type {AnalysisResult} from '../types/Analysis';
+    import type {Customer} from '../types/Customer';
 
-	// Пример данных для быстрой вставки
-	const exampleData = `Клиент: Иванов Иван Иванович
+    // Пример данных для быстрой вставки
+    const exampleData = `Клиент: Иванов Иван Иванович
 Договор: 1234567
 Тел: +7 (999) 123-45-67
 Адрес: ул. Примерная, д. 1
@@ -109,56 +113,126 @@ import type { Customer } from '../types/Customer';
 Территория (участок): Южный, участок 2
 Нет инета, не пингуется`;
 
-	// Функция для копирования текста
-	async function copyToClipboard(text: string): Promise<void> {
-		try {
-			await navigator.clipboard.writeText(text);
-		} catch (err) {
-			console.error('Failed to copy text:', err);
-		}
-	}
+    // Функция для копирования текста
+    async function copyToClipboard(text: string): Promise<void> {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (err) {
+            console.error('Failed to copy text:', err);
+        }
+    }
 
-	// Функция для форматирования даты
-	function formatDate(date: Date): string {
-		return date.toLocaleString('ru-RU', {
-			day: '2-digit',
-			month: '2-digit',
-			year: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
+    // Функция для форматирования даты
+    function formatDate(date: Date): string {
+        return date.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
-	// Обновление общей статистики
-	function updateStatsOverview(analysis: AnalysisResult, totalCustomers: number): void {
-		const statsOverview = document.getElementById('statsOverview');
-		if (statsOverview) {
-			statsOverview.classList.remove('hidden');
-		}
+    // Обновление общей статистики
+    function updateStatsOverview(analysis: AnalysisResult, totalCustomers: number): void {
+        const statsOverview = document.getElementById('statsOverview');
+        if (statsOverview) {
+            statsOverview.classList.remove('hidden');
+        }
 
-		const totalCustomersEl = document.getElementById('totalCustomers');
-		const uniqueMkusEl = document.getElementById('uniqueMkus');
-		const uniqueTerritoriesEl = document.getElementById('uniqueTerritories');
-		const totalProblemsEl = document.getElementById('totalProblems');
+        const totalCustomersEl = document.getElementById('totalCustomers');
+        const uniqueMkusEl = document.getElementById('uniqueMkus');
+        const uniqueTerritoriesEl = document.getElementById('uniqueTerritories');
+        const totalProblemsEl = document.getElementById('totalProblems');
 
-		if (totalCustomersEl) totalCustomersEl.textContent = totalCustomers.toString();
-		if (uniqueMkusEl) uniqueMkusEl.textContent = Object.keys(analysis.mkuStats).length.toString();
-		if (uniqueTerritoriesEl) uniqueTerritoriesEl.textContent = Object.keys(analysis.territoryStats).length.toString();
-		if (totalProblemsEl) {
-			const totalProblems = Object.values(analysis.problemCategories)
-				.reduce((sum, customers) => sum + customers.length, 0);
-			totalProblemsEl.textContent = totalProblems.toString();
-		}
-	}
+        if (totalCustomersEl) totalCustomersEl.textContent = totalCustomers.toString();
+        if (uniqueMkusEl) uniqueMkusEl.textContent = Object.keys(analysis.mkuStats).length.toString();
+        if (uniqueTerritoriesEl) uniqueTerritoriesEl.textContent = Object.keys(analysis.territoryStats).length.toString();
+        if (totalProblemsEl) {
+            const totalProblems = Object.values(analysis.problemCategories)
+                .reduce((sum, customers) => sum + customers.length, 0);
+            totalProblemsEl.textContent = totalProblems.toString();
+        }
+    }
 
-	async function renderResults(analysis: AnalysisResult): Promise<void> {
-		const resultsDiv = document.getElementById('results');
-		if (!resultsDiv) return;
+    async function renderResults(analysis: AnalysisResult): Promise<void> {
+        const resultsDiv = document.getElementById('results');
+        if (!resultsDiv) return;
 
-		resultsDiv.innerHTML = '';
+        resultsDiv.innerHTML = '';
 
-		// МКУ статистика
-		const mkuCardHtml = `
+        // Function to show toast notification
+        function showToast() {
+            const toast = document.getElementById('copy-toast');
+            if (toast) {
+                toast.style.transform = 'translateY(0)';
+                toast.style.opacity = '1';
+                setTimeout(() => {
+                    toast.style.transform = 'translateY(100%)';
+                    toast.style.opacity = '0';
+                }, 2000);
+            }
+        }
+
+        // Function to copy customer data
+        async function copyCustomerData(customer: Customer) {
+            const content = [
+                `Клиент: ${customer.Клиент}`,
+                `Договор: ${customer.Договор}`,
+                customer.Тел ? `Тел: ${customer.Тел}` : '',
+                `Адрес: ${customer.Адрес}`,
+                `МКУ: ${customer.МКУ}`,
+                `Территория: ${customer['Территория (участок)']}`,
+                customer.problem ? `Проблема: ${customer.problem}` : ''
+            ].filter(line => line).join('\n');
+
+            try {
+                await navigator.clipboard.writeText(content);
+                showToast();
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        }
+
+        // Function to create customer card HTML
+        const createCustomerCard = (customer: Customer, categoryStyle: string) => `
+        <div class="${categoryStyle} border rounded-lg p-4 hover:shadow-sm transition-shadow relative group cursor-pointer customer-card"
+             data-customer='${JSON.stringify(customer).replace(/'/g, "&apos;")}'>
+            <div class="flex justify-between items-start mb-2">
+                <p class="font-medium text-gray-800">${customer.Клиент}</p>
+                <span class="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <i class="fas fa-copy"></i>
+                </span>
+            </div>
+            <div class="text-sm space-y-1">
+                <p class="text-gray-600">
+                    <i class="fas fa-file-contract w-5"></i> ${customer.Договор}
+                </p>
+                ${customer.Тел ? `
+                    <p class="text-gray-600">
+                        <i class="fas fa-phone w-5"></i> ${customer.Тел}
+                    </p>
+                ` : ''}
+                <p class="text-gray-600">
+                    <i class="fas fa-map-marker-alt w-5"></i> ${customer.Адрес}
+                </p>
+                <p class="text-gray-600">
+                    <i class="fas fa-network-wired w-5"></i> ${customer.МКУ}
+                </p>
+                <p class="text-gray-600">
+                    <i class="fas fa-map w-5"></i> ${customer['Территория (участок)']}
+                </p>
+                ${customer.problem ? `
+                    <p class="text-red-600 mt-2">
+                        <i class="fas fa-exclamation-circle w-5"></i> ${customer.problem}
+                    </p>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+        // МКУ статистика
+        const mkuCardHtml = `
 			<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
 				<div class="flex justify-between items-center mb-4">
 					<h3 class="text-xl font-semibold text-gray-800">Распределение по МКУ</h3>
@@ -168,8 +242,8 @@ import type { Customer } from '../types/Customer';
 				</div>
 				<div class="space-y-2">
 					${Object.entries(analysis.mkuStats)
-			.sort(([,a], [,b]) => b - a)
-			.map(([key, value]: [string, number]) => `
+            .sort(([, a], [, b]) => b - a)
+            .map(([key, value]: [string, number]) => `
 							<div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
 								<span class="text-gray-700">${key}</span>
 								<span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
@@ -181,8 +255,8 @@ import type { Customer } from '../types/Customer';
 			</div>
 		`;
 
-		// Территории
-		const territoryCardHtml = `
+        // Территории
+        const territoryCardHtml = `
 			<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
 				<div class="flex justify-between items-center mb-4">
 					<h3 class="text-xl font-semibold text-gray-800">Распределение по территориям</h3>
@@ -192,8 +266,8 @@ import type { Customer } from '../types/Customer';
 				</div>
 				<div class="space-y-2">
 					${Object.entries(analysis.territoryStats)
-			.sort(([,a], [,b]) => b - a)
-			.map(([key, value]: [string, number]) => `
+            .sort(([, a], [, b]) => b - a)
+            .map(([key, value]: [string, number]) => `
 							<div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
 								<span class="text-gray-700">${key}</span>
 								<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
@@ -205,209 +279,159 @@ import type { Customer } from '../types/Customer';
 			</div>
 		`;
 
-		const mkuDiv = document.createElement('div');
-		mkuDiv.innerHTML = mkuCardHtml;
-		mkuDiv.querySelector('.copy-btn')?.addEventListener('click', () => {
-			const content = Object.entries(analysis.mkuStats)
-				.sort(([,a], [,b]) => b - a)
-				.map(([key, value]) => `${key}: ${value}`)
-				.join('\n');
-			copyToClipboard(content);
-		});
-		resultsDiv.appendChild(mkuDiv);
+        const mkuDiv = document.createElement('div');
+        mkuDiv.innerHTML = mkuCardHtml;
+        mkuDiv.querySelector('.copy-btn')?.addEventListener('click', () => {
+            const content = Object.entries(analysis.mkuStats)
+                .sort(([, a], [, b]) => b - a)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n');
+            copyToClipboard(content);
+        });
+        resultsDiv.appendChild(mkuDiv);
 
-		const territoryDiv = document.createElement('div');
-		territoryDiv.innerHTML = territoryCardHtml;
-		territoryDiv.querySelector('.copy-btn')?.addEventListener('click', () => {
-			const content = Object.entries(analysis.territoryStats)
-				.sort(([,a], [,b]) => b - a)
-				.map(([key, value]) => `${key}: ${value}`)
-				.join('\n');
-			copyToClipboard(content);
-		});
-		resultsDiv.appendChild(territoryDiv);
+        const territoryDiv = document.createElement('div');
+        territoryDiv.innerHTML = territoryCardHtml;
+        territoryDiv.querySelector('.copy-btn')?.addEventListener('click', () => {
+            const content = Object.entries(analysis.territoryStats)
+                .sort(([, a], [, b]) => b - a)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n');
+            copyToClipboard(content);
+        });
+        resultsDiv.appendChild(territoryDiv);
 
-		// Категории проблем
-		const problemCategories = {
-			'Нет интернета': 'bg-red-50 border-red-100',
-			'Проблемы с играми': 'bg-purple-50 border-purple-100',
-			'Проблемы со скоростью': 'bg-yellow-50 border-yellow-100',
-			'Другие проблемы': 'bg-gray-50 border-gray-100'
-		};
+        // Категории проблем
+        const problemCategories = {
+            'Нет интернета': 'bg-red-50 border-red-100',
+            'Проблемы с играми': 'bg-purple-50 border-purple-100',
+            'Проблемы со скоростью': 'bg-yellow-50 border-yellow-100',
+            'Другие проблемы': 'bg-gray-50 border-gray-100'
+        };
 
-		const translatedCategories = {
-			'No internet': 'Нет интернета',
-			'Gaming issues': 'Проблемы с играми',
-			'Speed issues': 'Проблемы со скоростью',
-			'Other issues': 'Другие проблемы'
-		};
+        const translatedCategories = {
+            'No internet': 'Нет интернета',
+            'Gaming issues': 'Проблемы с играми',
+            'Speed issues': 'Проблемы со скоростью',
+            'Other issues': 'Другие проблемы'
+        };
 
-		for (const [category, customers] of Object.entries(analysis.problemCategories)) {
-			if (customers.length > 0) {
-				const translatedCategory = translatedCategories[category as keyof typeof translatedCategories];
-				const categoryStyle = problemCategories[translatedCategory as keyof typeof problemCategories];
+        for (const [category, customers] of Object.entries(analysis.problemCategories)) {
+            if (customers.length > 0) {
+                const translatedCategory = translatedCategories[category as keyof typeof translatedCategories];
+                const categoryStyle = problemCategories[translatedCategory as keyof typeof problemCategories];
 
-				const categoryCardHtml = `
-					<div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-						<div class="flex justify-between items-center mb-4">
-							<h3 class="text-xl font-semibold text-gray-800">
-								${translatedCategory} (${customers.length})
-							</h3>
-							<button class="text-gray-500 hover:text-gray-700 transition-colors copy-btn" title="Копировать">
-								<i class="fas fa-copy"></i>
-							</button>
-						</div>
-						<div class="space-y-4">
-							${(customers as Customer[]).map((customer: Customer) => `
-								<div class="${categoryStyle} border rounded-lg p-4 hover:shadow-sm transition-shadow relative group">
-									<div class="flex justify-between items-start mb-2">
-										<p class="font-medium text-gray-800">${customer.Клиент}</p>
-										<button class="copy-contract invisible group-hover:visible text-gray-500 hover:text-gray-700 transition-colors" 
-											data-contract="${customer.Договор}" 
-											title="Копировать номер договора">
-											<i class="fas fa-copy"></i>
-										</button>
-									</div>
-									<div class="text-sm space-y-1">
-										<p class="text-gray-600">
-											<i class="fas fa-file-contract w-5"></i> ${customer.Договор}
-										</p>
-										${customer.Тел ? `
-											<p class="text-gray-600">
-												<i class="fas fa-phone w-5"></i> ${customer.Тел}
-											</p>
-										` : ''}
-										<p class="text-gray-600">
-											<i class="fas fa-map-marker-alt w-5"></i> ${customer.Адрес}
-										</p>
-										<p class="text-gray-600">
-											<i class="fas fa-network-wired w-5"></i> ${customer.МКУ}
-										</p>
-										<p class="text-gray-600">
-											<i class="fas fa-map w-5"></i> ${customer['Территория (участок)']}
-										</p>
-										${customer.problem ? `
-											<p class="text-red-600 mt-2">
-												<i class="fas fa-exclamation-circle w-5"></i> ${customer.problem}
-											</p>
-										` : ''}
-									</div>
-								</div>
-							`).join('')}
-						</div>
-					</div>
-				`;
+                const categoryCardHtml = `
+                <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">
+                            ${translatedCategory} (${customers.length})
+                        </h3>
+                        <button class="text-gray-500 hover:text-gray-700 transition-colors copy-btn" title="Копировать">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        ${customers.map(customer => createCustomerCard(customer, categoryStyle)).join('')}
+                    </div>
+                </div>
+            `;
 
-				const categoryDiv = document.createElement('div');
-				categoryDiv.innerHTML = categoryCardHtml;
+                const categoryDiv = document.createElement('div');
+                categoryDiv.innerHTML = categoryCardHtml;
+                resultsDiv.appendChild(categoryDiv);
+            }
+        }
 
-				// Добавляем обработчики копирования для карточки
-				categoryDiv.querySelector('.copy-btn')?.addEventListener('click', () => {
-					const content = customers
-						.map(customer =>
-							`Клиент: ${customer.Клиент}\n` +
-							`Договор: ${customer.Договор}\n` +
-							(customer.Тел ? `Тел: ${customer.Тел}\n` : '') +
-							`Адрес: ${customer.Адрес}\n` +
-							`МКУ: ${customer.МКУ}\n` +
-							`Территория: ${customer['Территория (участок)']}\n` +
-							(customer.problem ? `Проблема: ${customer.problem}\n` : '') +
-							'---'
-						)
-						.join('\n');
-					copyToClipboard(content);
-				});
+        // Add event listeners to the customer cards
+        function addCustomerCardListeners() {
+            document.querySelectorAll('.customer-card').forEach(card => {
+                card.addEventListener('click', async () => {
+                    const customerData = JSON.parse((card as HTMLElement).dataset.customer || '{}');
+                    await copyCustomerData(customerData);
+                });
+            });
+        }
 
-				// Добавляем обработчики копирования для номеров договоров
-				categoryDiv.querySelectorAll('.copy-contract').forEach(button => {
-					button.addEventListener('click', (e) => {
-						const contract = (e.currentTarget as HTMLButtonElement).dataset.contract;
-						if (contract) {
-							copyToClipboard(contract);
-						}
-					});
-				});
+        // Add listeners after rendering all cards
+        addCustomerCardListeners();
 
-				resultsDiv.appendChild(categoryDiv);
-			}
-		}
+        // Show export button
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.classList.remove('hidden');
+        }
+    }
 
-		// Показываем кнопку экспорта
-		const exportBtn = document.getElementById('exportBtn');
-		if (exportBtn) {
-			exportBtn.classList.remove('hidden');
-		}
-	}
+    // Функция экспорта в Excel
+    function exportToExcel(analysis: AnalysisResult): void {
+        let csv = 'Категория,Клиент,Договор,Телефон,Адрес,МКУ,Территория,Проблема\n';
 
-	// Функция экспорта в Excel
-	function exportToExcel(analysis: AnalysisResult): void {
-		let csv = 'Категория,Клиент,Договор,Телефон,Адрес,МКУ,Территория,Проблема\n';
+        for (const [category, customers] of Object.entries(analysis.problemCategories)) {
+            for (const customer of customers) {
+                csv += `${category},` +
+                    `"${customer.Клиент}",` +
+                    `${customer.Договор},` +
+                    `${customer.Тел || ''},` +
+                    `"${customer.Адрес}",` +
+                    `"${customer.МКУ}",` +
+                    `"${customer['Территория (участок)']}",` +
+                    `"${customer.problem || ''}"\n`;
+            }
+        }
 
-		for (const [category, customers] of Object.entries(analysis.problemCategories)) {
-			for (const customer of customers) {
-				csv += `${category},` +
-					`"${customer.Клиент}",` +
-					`${customer.Договор},` +
-					`${customer.Тел || ''},` +
-					`"${customer.Адрес}",` +
-					`"${customer.МКУ}",` +
-					`"${customer['Территория (участок)']}",` +
-					`"${customer.problem || ''}"\n`;
-			}
-		}
+        const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
 
-		const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-		const link = document.createElement('a');
-		const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `анализ_обращений_${formatDate(new Date())}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
-		link.setAttribute('href', url);
-		link.setAttribute('download', `анализ_обращений_${formatDate(new Date())}.csv`);
-		link.style.visibility = 'hidden';
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}
+    // Инициализация обработчиков событий
+    document.addEventListener('DOMContentLoaded', () => {
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const pasteExampleBtn = document.getElementById('pasteExample');
+        const clearDataBtn = document.getElementById('clearData');
+        const inputDataArea = document.getElementById('inputData') as HTMLTextAreaElement;
 
-	// Инициализация обработчиков событий
-	document.addEventListener('DOMContentLoaded', () => {
-		const analyzeBtn = document.getElementById('analyzeBtn');
-		const exportBtn = document.getElementById('exportBtn');
-		const pasteExampleBtn = document.getElementById('pasteExample');
-		const clearDataBtn = document.getElementById('clearData');
-		const inputDataArea = document.getElementById('inputData') as HTMLTextAreaElement;
+        analyzeBtn?.addEventListener('click', () => {
+            const inputText = inputDataArea.value;
+            const customers = parseCustomerData(inputText);
+            const analysis = analyzeData(customers);
+            renderResults(analysis).catch(console.error);
+            updateStatsOverview(analysis, customers.length);
+        });
 
-		analyzeBtn?.addEventListener('click', () => {
-			const inputText = inputDataArea.value;
-			const customers = parseCustomerData(inputText);
-			const analysis = analyzeData(customers);
-			renderResults(analysis).catch(console.error);
-			updateStatsOverview(analysis, customers.length);
-		});
+        exportBtn?.addEventListener('click', () => {
+            const inputText = inputDataArea.value;
+            const customers = parseCustomerData(inputText);
+            const analysis = analyzeData(customers);
+            exportToExcel(analysis);
+        });
 
-		exportBtn?.addEventListener('click', () => {
-			const inputText = inputDataArea.value;
-			const customers = parseCustomerData(inputText);
-			const analysis = analyzeData(customers);
-			exportToExcel(analysis);
-		});
+        pasteExampleBtn?.addEventListener('click', () => {
+            inputDataArea.value = exampleData;
+        });
 
-		pasteExampleBtn?.addEventListener('click', () => {
-			inputDataArea.value = exampleData;
-		});
-
-		clearDataBtn?.addEventListener('click', () => {
-			inputDataArea.value = '';
-			const resultsDiv = document.getElementById('results');
-			if (resultsDiv) {
-				resultsDiv.innerHTML = '';
-			}
-			const statsOverview = document.getElementById('statsOverview');
-			if (statsOverview) {
-				statsOverview.classList.add('hidden');
-			}
-			exportBtn?.classList.add('hidden');
-		});
-	});
+        clearDataBtn?.addEventListener('click', () => {
+            inputDataArea.value = '';
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.innerHTML = '';
+            }
+            const statsOverview = document.getElementById('statsOverview');
+            if (statsOverview) {
+                statsOverview.classList.add('hidden');
+            }
+            exportBtn?.classList.add('hidden');
+        });
+    });
 </script>
 </body>
 </html>
