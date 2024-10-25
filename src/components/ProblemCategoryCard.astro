@@ -1,0 +1,99 @@
+---
+import type { Customer } from '../types/Customer';
+
+interface Props {
+    title: string;
+    customers: Customer[];
+}
+
+const { title, customers } = Astro.props;
+
+// Helper function to split contract info
+function splitContractInfo(contract: string) {
+    const parts = contract.split(/(?<=^\d+)(.+)/);
+    return {
+        number: parts[0] || '',
+        details: parts[1] || ''
+    };
+}
+---
+
+<div class="bg-white rounded-lg shadow-lg p-6">
+    <h3 class="text-xl font-semibold mb-4">{title} ({customers.length})</h3>
+    <div class="space-y-4">
+        {customers.map(customer => {
+            const contractInfo = splitContractInfo(customer.Договор);
+            return (
+                    <div class="border-b pb-2 customer-card hover:bg-gray-50 transition-colors cursor-pointer">
+                        <p class="font-medium">{customer.Клиент}</p>
+                        <p class="text-sm text-gray-600">
+                            <span>{contractInfo.number}</span>
+                            <span class="contract-details blur-sm hover:blur-none transition-all duration-200">
+                            {contractInfo.details}
+                        </span>
+                        </p>
+                        <p class="text-sm text-gray-600">{customer.Адрес}</p>
+                        {customer.problem && <p class="text-sm text-red-600">{customer.problem}</p>}
+                    </div>
+            );
+        })}
+    </div>
+</div>
+
+<div class="copy-notification fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg opacity-0 transition-opacity duration-300 pointer-events-none">
+    Карточка скопирована!
+</div>
+
+<script>
+    function setupCardCopy() {
+        const cards = document.querySelectorAll('.customer-card');
+        const notification = document.querySelector('.copy-notification');
+
+        cards.forEach(card => {
+            card.addEventListener('click', async () => {
+                // Get all text content from the card
+                const cardText = Array.from(card.children)
+                    .map(child => child.textContent?.trim())
+                    .filter(Boolean)
+                    .join('\n');
+
+                try {
+                    await navigator.clipboard.writeText(cardText);
+
+                    // Show notification
+                    if (notification) {
+                        notification.classList.remove('opacity-0');
+                        notification.classList.add('opacity-100');
+
+                        // Hide notification after 2 seconds
+                        setTimeout(() => {
+                            notification.classList.remove('opacity-100');
+                            notification.classList.add('opacity-0');
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.error('Failed to copy text:', err);
+                }
+            });
+        });
+    }
+
+    // Setup copy functionality when the component loads
+    document.addEventListener('astro:page-load', setupCardCopy);
+    // Also setup on initial load
+    setupCardCopy();
+</script>
+
+<style>
+    .customer-card {
+        position: relative;
+    }
+
+    .customer-card:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .copy-notification {
+        z-index: 50;
+    }
+</style>
