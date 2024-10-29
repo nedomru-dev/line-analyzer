@@ -1,6 +1,31 @@
 import type {Customer} from "../types/Customer.ts";
 import type {AnalysisResult, ProblemCategories, Statistics} from "../types/Analysis.ts";
 
+// TV-related terms and problems
+const TV_RELATED_TERMS = [
+    'тв', 'tv', 'телевизор', 'телевидение',
+    'приставка', 'ресивер', 'stb', 'set-top box',
+    'канал', 'вещание', 'трансляция',
+    'смарт тв', 'smart tv'
+];
+
+// Network equipment and technical terms
+const NETWORK_EQUIPMENT_TERMS = [
+    'роутер', 'router', 'ону', 'onu',
+    'терминал', 'terminal', 'модем', 'modem',
+    'линк', 'link', 'сигнал', 'signal',
+    'оптика', 'optical', 'eqm'
+];
+
+// Connection status related terms
+const CONNECTION_STATUS_TERMS = [
+    'сессия', 'session',
+    'подключение', 'connection',
+    'линк', 'link',
+    'соединение',
+    'пинг', 'ping'
+];
+
 // Популярные игры и их вариации написания
 const POPULAR_GAMES = [
     // Battle Royale & Shooters
@@ -20,14 +45,6 @@ const POPULAR_GAMES = [
     'gta', 'гта', 'gta online',
     'minecraft', 'майнкрафт',
 
-    // Specific Games
-    'tarkov', 'тарков', 'escape from tarkov',
-    'rainbow six', 'rainbow 6', 'r6',
-    'overwatch', 'овервотч',
-    'rocket league', 'рокет лига',
-    'fifa', 'фифа',
-    'roblox', 'роблокс',
-
     // Generic Terms
     'battle.net', 'баттлнет',
     'steam', 'стим',
@@ -35,28 +52,26 @@ const POPULAR_GAMES = [
     'origin', 'ориджин'
 ];
 
-// Шаблоны для определения проблем с интернетом
+// Enhanced patterns for detecting internet problems
 const INTERNET_PROBLEM_PATTERNS = [
-    // Прямые указания на отсутствие интернета
-    'нет инет',
-    'нет интернет',
-    'нет сессии',
-    'не работает инт',
-    'отсутствует интернет',
-    'пропал интернет',
-    'отключился интернет',
-    // Сокращения и вариации
-    'нет инт',
-    'нет нет',
-    'не раб инт',
-    'не работает и',
-    // Технические термины
-    'нет сессии',
-    'нет подключения',
-    'отсутствует подключение',
-    'нет соединения',
-    'отсутствует соединение'
+    // No internet indicators
+    'нет инет', 'нет интернет', 'нет сессии',
+    'не работает инт', 'отсутствует интернет',
+    'пропал интернет', 'отключился интернет',
+    // Technical issues
+    'нет сигнала', 'нет линка', 'нет оптического линка',
+    'не устанавливает сессию', 'отсутствует подключение',
+    // Shortened forms
+    'нет инт', 'нет нет', 'не раб инт',
+    // Status checks
+    'по eqm', 'проверка терминала',
+    'нет подключения', 'нет соединения'
 ];
+
+function hasKeywords(text: string, keywords: string[]): boolean {
+    const lowerText = text.toLowerCase();
+    return keywords.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
 
 export function analyzeData(customers: Customer[]): AnalysisResult {
     const mkuStats: Statistics = {};
@@ -78,30 +93,48 @@ export function analyzeData(customers: Customer[]): AnalysisResult {
         territoryStats[territory] = (territoryStats[territory] || 0) + 1;
     });
 
-    // Helper function to check if text matches any internet problem pattern
+    // Helper function for internet problems with enhanced detection
     const hasInternetProblem = (text: string): boolean => {
+        if (!text) return false;
         text = text.toLowerCase();
-        return INTERNET_PROBLEM_PATTERNS.some(pattern => text.includes(pattern)) ||
-            // Дополнительная проверка комбинаций слов
-            ((text.includes('нет') || text.includes('не работает') || text.includes('отсутствует')) &&
-                (text.includes('интернет') || text.includes('инт') || text.includes('инет')));
+
+        // Direct pattern matching
+        if (INTERNET_PROBLEM_PATTERNS.some(pattern => text.includes(pattern))) {
+            return true;
+        }
+
+        // Combination matching
+        const hasNegation = text.includes('нет') ||
+            text.includes('не работает') ||
+            text.includes('отсутствует');
+
+        const hasInternetTerm = text.includes('интернет') ||
+            text.includes('инт') ||
+            text.includes('инет') ||
+            text.includes('сессии');
+
+        return hasNegation && hasInternetTerm;
     };
 
-    // Analyze problems
+    // Categorize problems
     const problemCategories: ProblemCategories = {
         'No internet': customers.filter(c => {
             return c.problem && hasInternetProblem(c.problem);
         }),
+        'TV issues': customers.filter(c => {
+            if (!c.problem) return false;
+            return hasKeywords(c.problem, TV_RELATED_TERMS);
+        }),
         'Gaming issues': customers.filter(c => {
-            const problem = (c.problem || '').toLowerCase();
-            // Проверяем общие игровые термины
-            if (problem.includes('игр') || problem.includes('пинг')) return true;
-
-            // Проверяем конкретные игры
-            return POPULAR_GAMES.some(game => problem.includes(game));
+            if (!c.problem) return false;
+            const problem = c.problem.toLowerCase();
+            return problem.includes('игр') ||
+                problem.includes('пинг') ||
+                POPULAR_GAMES.some(game => problem.includes(game));
         }),
         'Speed issues': customers.filter(c => {
-            const problem = (c.problem || '').toLowerCase();
+            if (!c.problem) return false;
+            const problem = c.problem.toLowerCase();
             return problem.includes('скорост') ||
                 problem.includes('медленн') ||
                 problem.includes('тормоз') ||
@@ -111,16 +144,19 @@ export function analyzeData(customers: Customer[]): AnalysisResult {
             if (!c.problem) return false;
             const problem = c.problem.toLowerCase();
 
-            return !(
-                hasInternetProblem(problem) ||
-                problem.includes('игр') ||
+            // Check if the problem fits any other category
+            const isInternetProblem = hasInternetProblem(problem);
+            const isTVProblem = hasKeywords(problem, TV_RELATED_TERMS);
+            const isGamingProblem = problem.includes('игр') ||
                 problem.includes('пинг') ||
-                POPULAR_GAMES.some(game => problem.includes(game)) ||
-                problem.includes('скорост') ||
+                POPULAR_GAMES.some(game => problem.includes(game));
+            const isSpeedProblem = problem.includes('скорост') ||
                 problem.includes('медленн') ||
                 problem.includes('тормоз') ||
-                (problem.includes('не') && problem.includes('грузит'))
-            );
+                (problem.includes('не') && problem.includes('грузит'));
+
+            // If it doesn't fit any other category, it goes to "Other issues"
+            return !(isInternetProblem || isTVProblem || isGamingProblem || isSpeedProblem);
         })
     };
 

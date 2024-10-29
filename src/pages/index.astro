@@ -94,6 +94,20 @@ import "../styles/style.css";
     import type {AnalysisResult} from '../types/Analysis';
     import type {Customer} from '../types/Customer';
 
+    function updateEntryCount() {
+        const inputData = (document.getElementById('inputData') as HTMLTextAreaElement).value;
+        const entryCount = (inputData.match(/Клиент:/g) || []).length;
+
+        const countDisplay = document.getElementById('entryCount');
+        if (countDisplay) {
+            countDisplay.textContent = `Найдено записей: ${entryCount}`;
+            countDisplay.style.display = entryCount > 0 ? 'block' : 'none';
+        }
+    }
+
+    // Add event listener
+    document.getElementById('inputData')?.addEventListener('input', updateEntryCount);
+
     // Пример данных для быстрой вставки
     const exampleData = `Клиент: Иванов Иван Иванович
 Договор: 1234567

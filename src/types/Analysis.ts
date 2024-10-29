@@ -6,6 +6,7 @@ export interface Statistics {
 
 export interface ProblemCategories {
     'No internet': Customer[];
+    'TV issues': Customer[];
     'Gaming issues': Customer[];
     'Speed issues': Customer[];
     'Other issues': Customer[];
