@@ -3,6 +3,7 @@ import StatisticsCard from '../components/StatisticsCard.astro';
 import ProblemCategoryCard from '../components/ProblemCategoryCard.astro';
 import type {AnalysisResult} from '../types/Analysis';
 import type {Customer} from '../types/Customer';
+import "../styles/style.css";
 ---
 
 <!DOCTYPE html>
@@ -13,7 +14,6 @@ import type {Customer} from '../types/Customer';
     <title>Анализатор обращений клиентов</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../styles/style.css">
 </head>
 <body class="bg-gray-50 min-h-screen p-4 md:p-8">
 <div id="copy-toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
